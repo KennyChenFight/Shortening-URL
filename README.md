@@ -1,7 +1,3 @@
----
-typora-root-url: ../Shortening-URL
----
-
 # Shortening-URL
 
 ## 設計思路
