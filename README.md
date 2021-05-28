@@ -6,6 +6,8 @@
 可以看到branch有version1 ~ version7
 之後想寫blog或是拍影片來說明每個版本的更迭遇到了什麼問題怎樣去分析及解決。
 
+裡面其實有用到我的一些之前封裝好的module，例如：golib, gin-starter。可以去看看～～
+
 
 ## 設計思路
 
