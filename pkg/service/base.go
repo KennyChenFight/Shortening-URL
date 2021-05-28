@@ -1,36 +1,47 @@
 package service
 
 import (
-	"github.com/KennyChenFight/gin-starter/pkg/dao"
-	"github.com/KennyChenFight/gin-starter/pkg/util"
+	"fmt"
+	"net/http"
+
+	"github.com/KennyChenFight/Shortening-URL/pkg/repository"
+
+	"github.com/KennyChenFight/Shortening-URL/pkg/business"
+	"github.com/KennyChenFight/golib/loglib"
 	"github.com/gin-gonic/gin"
 )
 
+type Config struct {
+	FQDN string
+}
+
 type BaseService struct {
-	memberDAO            dao.MemberDAO
-	validationTranslator *util.ValidationTranslator
+	config        *Config
+	logger        *loglib.Logger
+	urlRepository repository.Repository
 }
 
-func NewService(memberDAO dao.MemberDAO, validatorTranslator *util.ValidationTranslator) *BaseService {
-	return &BaseService{memberDAO: memberDAO, validationTranslator: validatorTranslator}
+func NewService(config *Config, logger *loglib.Logger, urlRepository repository.Repository) *BaseService {
+	return &BaseService{config: config, logger: logger, urlRepository: urlRepository}
 }
 
-func sendErrorResponse(c *gin.Context, service *BaseService, businessError *util.BusinessError) {
-	translated, err := service.validationTranslator.Translate(c.GetHeader("Accept-Language"), businessError.Reason)
-	if translated == nil && err == nil {
-		c.JSON(businessError.HTTPStatusCode, businessError)
-		return
-	}
-
-	// translate fail, you can logging.
-	if err != nil {
-		c.JSON(businessError.HTTPStatusCode, businessError)
-	} else {
-		businessError.ValidationErrors = translated
-		c.JSON(businessError.HTTPStatusCode, businessError)
-	}
+func (s *BaseService) HandleMethodNotAllowed(c *gin.Context) {
+	s.responseWithError(c, business.NewError(business.MethodNowAllowed, http.StatusMethodNotAllowed, "http method not allowed", nil))
 }
 
-func sendSuccessResponse(c *gin.Context, statusCode int, response interface{}) {
-	c.JSON(statusCode, response)
+func (s *BaseService) HandlePathNotFound(c *gin.Context) {
+	s.responseWithError(c, business.NewError(business.PathNotFound, http.StatusNotFound, "http path not found", nil))
+}
+
+func (s *BaseService) responseWithError(c *gin.Context, businessError *business.Error) {
+	c.Abort()
+	c.Error(businessError)
+}
+
+func (s *BaseService) responseWithSuccess(c *gin.Context, businessSuccess *business.Success) {
+	c.Set("success", businessSuccess)
+}
+
+func combineFQDNWithShorteningURLID(fqdn, id string) string {
+	return fmt.Sprintf("%s/%s", fqdn, id)
 }
