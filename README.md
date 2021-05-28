@@ -154,6 +154,26 @@ CREATE TABLE IF NOT EXISTS keys(
 
 ### local 運行
 
+有一些環境變數可以先看一下：
+
+* POSTGRES_MIGRATION_FILE_DIR
+
+  這個代表的是PostgreSQL的migration SQL file
+
+* POSTGRES_URL
+
+* REDIS_URL
+
+* SLIDE_WINDOW_RATE_LIMITER_CAPACITY
+
+  這個代表的是允許一段時間內可以訪問幾次 預設100
+
+* SLIDE_WINDOW_RATE_LIMITER_INTERNAL
+
+  這個代表的是多長的間距 預設1h
+
+運行：
+
 ```bash
 docker-compose up server
 docker-compose up cron
