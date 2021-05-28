@@ -1,0 +1,57 @@
+version: "3.4"
+
+x-common-env: &common-env
+  - POSTGRES_URL=postgres://postgres@postgres:5432/postgres?sslmode=disable
+  - REDIS_URL=redis://redis:6379
+
+x-common-build: &common-build
+  build:
+    context: .
+    dockerfile: Dockerfile-test
+  working_dir: /src
+  environment: *common-env
+  volumes:
+    - .:/src
+  depends_on:
+    - postgres
+    - redis
+
+services:
+  postgres:
+    image: postgres:11-alpine
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+
+  redis:
+    image: redis:6.0.9-alpine
+
+  build:
+    <<: *common-build
+    command: ["make"]
+
+  test:
+    <<: *common-build
+    command: ["make", "test"]
+
+  codegen:
+    <<: *common-build
+    command: ["make", "codegen"]
+
+  server:
+    image: shortening-url-server:latest
+    build:
+      context: .
+      target: shortening-url-server
+    environment: *common-env
+    depends_on:
+      - postgres
+      - redis
+
+  cron:
+    image: shortening-url-cron:latest
+    build:
+      context: .
+      target: shortening-url-cron
+    environment: *common-env
+    depends_on:
+      - postgres
