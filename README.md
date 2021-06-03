@@ -251,7 +251,16 @@ docker-compose up cron
 * 也許delete expired url有更好的方式
 * 加入CI/CD
 * 加入kubernetest deploy yaml
+* 加入local cache 
+* 將random string 加入 checksum 可以更有效地檢查出違法亂try的request 也許就不需要用bloom filter
+* bloom filter如果命中率下降 則可以加開新的bloom filter
+* 增加redis 的qps 可以透過shard的方式來存放
+* local cache先拿一些key 這樣create 縮網址可以更快速 只有當local cache的key沒有的話再去跟PG拿
+
 
 ## contribution
 
 * 發Issue or PR 給我更好設計的靈感或是討論
+
+## 
+* checksum + randomID
