@@ -256,7 +256,7 @@ docker-compose up cron
 * bloom filter如果命中率下降 則可以加開新的bloom filter
 * 增加redis 的qps 可以透過shard的方式來存放
 * local cache先拿一些key 這樣create 縮網址可以更快速 只有當local cache的key沒有的話再去跟PG拿
-
+* 利用singleFlight 來實現lock 機制可能會更省事
 
 ## contribution
 
